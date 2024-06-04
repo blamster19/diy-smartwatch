@@ -1,12 +1,12 @@
 from rp2040driver import *
 from ui import *
 
-LCD = LCD_1inch28()
-LCD.set_bl_pwm(65535)
+lcd = LCD_1inch28()
+lcd.set_bl_pwm(65535)
 
-Touch=Touch_CST816T(mode=0,LCD=LCD)
+touch=Touch_CST816T(mode=0,LCD=lcd)
 
-smartwatch = Ui(LCD)
+smartwatch = Ui(lcd)
 
 running = True
 try:
@@ -16,5 +16,5 @@ try:
 except KeyboardInterrupt:
     pass
 
-LCD.fill(0)
-LCD.show()
+lcd.fill(0)
+lcd.show()
