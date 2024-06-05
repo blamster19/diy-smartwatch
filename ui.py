@@ -2,13 +2,12 @@ from machine import RTC
 import time
 
 def color(r, g, b):
-    return ((g>>3) << 11) | ((r>>2) << 5) | g >> 3
-
+    return (((g&0b00011100)<<3) +((b&0b11111000)>>3)<<8) + (r&0b11111000)+((g&0b11100000)>>5)
 # UI class
 #
 # panel  -  currently displayed panel
 # 			0 - date and time
-# 			1 - water level
+# 			1 - pulse oximeter
 
 class Ui:
     def __init__(self, lcd, touch, gyro, battery):
@@ -16,7 +15,7 @@ class Ui:
         self.touch = touch
         self.gyro = gyro
         self.battery = battery
-        self.panel = 0
+        self.panel = 1
         self.rtc = RTC()
 
     def draw(self):
@@ -26,7 +25,7 @@ class Ui:
         if self.panel == 0 :
             self._draw_datetime_face()
         elif self.panel == 1:
-            self._draw_water()
+            self._draw_bpm(69, 90)
         
         self.lcd.show()
         
@@ -40,8 +39,20 @@ class Ui:
         self.lcd.write_text(date_str, 40, 140, 2, 65535)
         self._draw_down_arrow()
 
-    def _draw_water(self):
-        pass
+    def _draw_bpm(self, bpm, spo2):
+        # draw pulse
+        self.lcd.write_text('bpm', 30, 60, 2, color(255, 255, 255))
+        self.lcd.write_text(str(bpm), 40, 90, 7, color(255, 255, 255))
+        self.lcd.write_text('SpO2', 160, 160, 1, color(255, 255, 255))
+        self.lcd.write_text(str(spo2)+'%', 100, 170, 4, color(114, 226, 59))
+        self._draw_up_arrow()
+
+    def _draw_up_arrow(self):
+        x = 0
+        for y in range(10,20):
+            x = x + 1
+            self.lcd.hline(120-x, y,3,color(0,255,255))
+            self.lcd.hline(117+x, y,3,color(0,255,255))
 
     def _draw_down_arrow(self):
         x = 0
