@@ -29,7 +29,7 @@ class Ui:
     def _draw_datetime_face(self):
         # draw time
         t = time.localtime()
-        time_str = str(t[3])+':'+'{:02d}'.format(t[4])+':'+'{:02d}'.format(t[5])
+        time_str = '{:02d}'.format(t[3])+':'+'{:02d}'.format(t[4])+':'+'{:02d}'.format(t[5])
         self.lcd.write_text(time_str, 25, 105, 3, 65535)
         # draw date
         date_str = str(t[0])+'-'+'{:02d}'.format(t[1])+'-'+'{:02d}'.format(t[2])
