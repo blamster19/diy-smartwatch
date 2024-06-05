@@ -7,8 +7,11 @@ import time
 # 			0 - date and time
 # 			1 - water level
 class Ui:
-    def __init__(self, lcd):
+    def __init__(self, lcd, touch, gyro, battery):
         self.lcd = lcd
+        self.touch = touch
+        self.gyro = gyro
+        self.battery = battery
         self.panel = 0
         self.rtc = RTC()
 
@@ -23,7 +26,7 @@ class Ui:
         
         self.lcd.show()
         
-    def _draw_datetime_face(self)
+    def _draw_datetime_face(self):
         # draw time
         t = time.localtime()
         time_str = str(t[3])+':'+'{:02d}'.format(t[4])+':'+'{:02d}'.format(t[5])

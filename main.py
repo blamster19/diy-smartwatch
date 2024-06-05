@@ -3,10 +3,11 @@ from ui import *
 
 lcd = LCD_1inch28()
 lcd.set_bl_pwm(65535)
+touch = Touch_CST816T(mode=0,LCD=lcd)
+gyro = QMI8658()
+battery = ADC(Pin(Vbat_Pin))
 
-touch=Touch_CST816T(mode=0,LCD=lcd)
-
-smartwatch = Ui(lcd)
+smartwatch = Ui(lcd, touch, gyro, battery)
 
 running = True
 try:
