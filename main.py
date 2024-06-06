@@ -12,6 +12,7 @@ smartwatch = Ui(lcd, touch, gyro, battery)
 running = True
 try:
     while running:
+        smartwatch.input()
         smartwatch.draw()
 
 except KeyboardInterrupt:

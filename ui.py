@@ -15,8 +15,9 @@ class Ui:
         self.touch = touch
         self.gyro = gyro
         self.battery = battery
-        self.panel = 1
+        self.panel = 0
         self.rtc = RTC()
+        self.max_panel = 1
 
     def draw(self):
         self.lcd.fill(0)
@@ -28,6 +29,22 @@ class Ui:
             self._draw_bpm(69, 90)
         
         self.lcd.show()
+
+    def input(self):
+        # swipe up
+        if self.touch.Gestures == 0x01:
+            self.touch.Gestures = 0
+            self.panel += 1
+            if self.panel >= self.max_panel:
+                self.panel = self.max_panel
+
+        # swipe down
+        elif self.touch.Gestures == 0x02:
+            self.touch.Gestures = 0
+            self.panel -= 1
+            if self.panel < 1:
+                self.panel = 0
+        time.sleep(0.1)
         
     def _draw_datetime_face(self):
         # draw time
