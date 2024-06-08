@@ -18,15 +18,16 @@ class Ui:
         self.panel = 0
         self.rtc = RTC()
         self.max_panel = 1
+        self.last_bpm = (0, 0)
 
-    def draw(self):
+    def draw(self, bpm, spo2):
         self.lcd.fill(0)
         
         # match panel
         if self.panel == 0 :
             self._draw_datetime_face()
         elif self.panel == 1:
-            self._draw_bpm(69, 90)
+            self._draw_bpm(bpm, spo2)
         
         self.lcd.show()
 
@@ -58,11 +59,14 @@ class Ui:
 
     def _draw_bpm(self, bpm, spo2):
         # draw pulse
+        bpm_str, new_bpm, bpm_color = (str(int(bpm)), bpm, color(255, 255, 255)) if bpm != None else (str(int(self.last_bpm[0])), self.last_bpm[0], color(190, 190, 190))
+        spo2_str, new_spo2, spo2_color = (str(int(spo2)), spo2, color(114, 226, 59)) if spo2 != None else (str(int(self.last_bpm[1])), self.last_bpm[1], color(86, 170, 44))
         self.lcd.write_text('bpm', 30, 60, 2, color(255, 255, 255))
-        self.lcd.write_text(str(bpm), 40, 90, 7, color(255, 255, 255))
+        self.lcd.write_text(bpm_str, 40, 90, 7, bpm_color)
         self.lcd.write_text('SpO2', 160, 160, 1, color(255, 255, 255))
-        self.lcd.write_text(str(spo2)+'%', 100, 170, 4, color(114, 226, 59))
+        self.lcd.write_text(spo2_str+'%', 100, 170, 4, spo2_color)
         self._draw_up_arrow()
+        self.last_bpm = (new_bpm, new_spo2)
 
     def _draw_up_arrow(self):
         x = 0
