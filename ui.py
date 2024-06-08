@@ -1,5 +1,6 @@
 from machine import RTC
 import time
+import math
 
 def color(r, g, b):
     return (((g&0b00011100)<<3) +((b&0b11111000)>>3)<<8) + (r&0b11111000)+((g&0b11100000)>>5)
@@ -8,6 +9,7 @@ def color(r, g, b):
 # panel  -  currently displayed panel
 # 			0 - date and time
 # 			1 - pulse oximeter
+# 			2 - level
 
 class Ui:
     def __init__(self, lcd, touch, gyro, battery):
@@ -17,7 +19,7 @@ class Ui:
         self.battery = battery
         self.panel = 0
         self.rtc = RTC()
-        self.max_panel = 1
+        self.max_panel = 2
         self.last_bpm = (0, 0)
 
     def draw(self, bpm, spo2):
@@ -28,6 +30,8 @@ class Ui:
             self._draw_datetime_face()
         elif self.panel == 1:
             self._draw_bpm(bpm, spo2)
+        elif self.panel == 2:
+            self._draw_level()
         
         self.lcd.show()
 
@@ -66,7 +70,19 @@ class Ui:
         self.lcd.write_text('SpO2', 160, 160, 1, color(255, 255, 255))
         self.lcd.write_text(spo2_str+'%', 100, 170, 4, spo2_color)
         self._draw_up_arrow()
+        self._draw_down_arrow()
         self.last_bpm = (new_bpm, new_spo2)
+
+    def _draw_level(self):
+        xyz = self.gyro.Read_XYZ()
+        x = 120-xyz[1]*60
+        y = 120+xyz[0]*60
+        for i in range(16):
+            self.lcd.hline(50, 50+10*i,140,color(255,255,255))
+            self.lcd.vline(50+10*i, 50,140,color(255,255,255))
+        self._draw_circle(120, 120, 3, color(255,255,255))
+        self._draw_circle(int(x), int(y), 10, color(14,249,30))
+        self._draw_up_arrow()
 
     def _draw_up_arrow(self):
         x = 0
@@ -81,3 +97,10 @@ class Ui:
             x = x + 1
             self.lcd.hline(120-x, y,3,color(0,255,255))
             self.lcd.hline(117+x, y,3,color(0,255,255))
+
+    def _draw_circle(self, x, y, r, color):
+        self.lcd.hline(x-r, y, r*2, color)
+        for i in range(1,r):
+            a = int(math.sqrt(r*r-i*i))
+            self.lcd.hline(x-a,y+i,a*2,color)
+            self.lcd.hline(x-a,y-i,a*2,color)
